@@ -62,6 +62,7 @@ class MainApp:
         self.detector.start()
         self.window.show()
 
+        
         # タイマー設定 (200ms = 5fps)
         from PySide6.QtCore import QTimer
         self.timer = QTimer()
@@ -92,7 +93,7 @@ class MainApp:
 
         # --- 集計処理 ---
         # A. 目線が画面外にあったフレーム数 (ここでは仮に gaze_distance > 0.5 を閾値とする)
-        looking_away_count = sum(1 for d in data_list if d.face_detected and d.gaze_distance > 0.5)
+        # looking_away_count = sum(1 for d in data_list if d.face_detected and d.gaze_distance > 0.5)
         
         # B. 目を閉じているフレーム数 (eye_openness < 0.5)
         # 左右どちらかが開いていればOKとするか、両目か等は要件次第。ここでは平均で判定
@@ -105,24 +106,26 @@ class MainApp:
         # 簡易的に、detector側で nose_x, nose_y を SensingData に含める必要があるが、
         # ここでは face_angle_yaw などの揺らぎで代用、あるいは0とする
         # ※本来は SensingData に nose_x, nose_y を追加すべき
-        valid_faces = [d for d in data_list if d.face_detected]
-        if len(valid_faces) >= 2:
-            # 動きの激しさを計算 (ここでは顔の向きのブレを標準偏差とする例)
-            stdev_val = statistics.stdev([d.face_angle_yaw for d in valid_faces])
-        else:
-            stdev_val = 0.0
+
+        # valid_faces = [d for d in data_list if d.face_detected]
+        # if len(valid_faces) >= 2:
+        #     # 動きの激しさを計算 (ここでは顔の向きのブレを標準偏差とする例)
+        #     stdev_val = statistics.stdev([d.face_angle_yaw for d in valid_faces])
+        # else:
+        #     stdev_val = 0.0
 
         # --- DB保存用データ構造 ---
         one_sec_summary = {
             "timestamp": datetime.now(),
-            "looking_away_count": looking_away_count, # 最大5
+            # "looking_away_count": looking_away_count, # 最大5
             "sleeping_count": sleeping_count,         # 最大5
             "no_face_count": no_face_count,           # 最大5
-            "movement_stdev": stdev_val
+            # "movement_stdev": stdev_val
         }
 
         # 3. DBへ保存 (DB班)
-        self.db.save_detail_log(one_sec_summary)
+        # self.db.save_detail_log(one_sec_summary)
+        print("1秒のデータ：",one_sec_summary)
 
         # 1分バッファに追加
         self.min_buffer.append(one_sec_summary)
@@ -140,7 +143,8 @@ class MainApp:
         score_data = self.calculator.calculate(self.min_buffer)
         
         # DBへ保存
-        self.db.save_score_log(score_data)
+        # self.db.save_score_log(score_data)
+        print("1分のスコア：", score_data.concentration_score)
         
         # 画面更新 (UI班)
         # UI側には update_score などのメソッドを作っておく

@@ -35,7 +35,7 @@ class FaceDetector:
         VisionRunningMode = mp.tasks.vision.RunningMode
 
         options = FaceLandmarkerOptions(
-            base_options=BaseOptions(model_asset_path='face_landmarker.task'),
+            base_options=BaseOptions(model_asset_path='./FocusMonitor/core/face_landmarker.task'),
             running_mode=VisionRunningMode.LIVE_STREAM,
             result_callback=self._result_callback,
             num_faces=1,
@@ -59,6 +59,8 @@ class FaceDetector:
             eye_left = get_score('eyeBlinkLeft') # 0=開, 1=閉
             eye_right = get_score('eyeBlinkRight')
             
+            print(f"Left Eye Blink Score: {eye_left:.2f}, Right Eye Blink Score: {eye_right:.2f}")
+
             # 顔の向きはTransformation Matrix等から計算が必要だが
             # ここでは簡易的に「鼻の座標」のズレなどを代用するか、
             # 本格的な回転行列計算を実装する（今回は枠組みなので省略）
@@ -75,8 +77,6 @@ class FaceDetector:
                     face_detected=True,
                     eye_openness_left=1.0 - eye_left,   # 1.0が開いている状態に変換
                     eye_openness_right=1.0 - eye_right,
-                    face_angle_yaw=0.0, # TODO: ロジック実装
-                    face_angle_pitch=0.0
                 )
         else:
             # 顔が見つからない場合
