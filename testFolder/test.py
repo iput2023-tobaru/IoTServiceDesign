@@ -1,6 +1,7 @@
 import cv2
 import mediapipe as mp
 import time
+from datetime import datetime
 
 # Tasks APIのモジュールを読み込み
 BaseOptions = mp.tasks.BaseOptions
@@ -36,6 +37,8 @@ def result_callback(result, output_image, timestamp_ms):
 
     print(f"左目\n 目頭： {landmarkers[133].x}, 目じり： {landmarkers[33].x}, 瞳孔： {landmarkers[468].x}")
     print(f"\n右目\n 目頭： {landmarkers[362].x}, 目じり： {landmarkers[263].x}, 瞳孔： {landmarkers[473].x}")
+
+    print(datetime.now())
 
 # オプション設定
 options = FaceLandmarkerOptions(

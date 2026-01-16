@@ -11,10 +11,10 @@ from datetime import datetime
 @dataclass
 class SensingData:
     """センサーから取得した生データ"""
-    timestamp: datetime
-    face_detected: bool
-    face_angle_x: float = 0.0  # 顔の向き(左右)
-    face_angle_y: float = 0.0  # 顔の向き(上下)
+    timestamp: datetime = None
+    face_detected: bool = False  # 顔認識の有無
+    eye_openness_left: float = 0.0,   # 1.0が開いている状態に変換
+    eye_openness_right: float = 0.0  # 1.0が開いている状態に変換,
     eye_openness: float = 0.0  # 目の開き具合 (0.0〜1.0)
     gaze_vector: dict = None   # 視線ベクトル
 
